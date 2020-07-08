@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Notas</title>
+    </head>
+    <body>
+        <div id="container">
+            <div id="grades-container">
+                <div id="grades">
+                    <h2 id="title">Notas</h1>
+
+                    <div id="grades">
+                        <input type="number" class="grade" id="gradeFirst" min="0" max="100" placeholder="Primeira nota" autocomplete="off">
+                        <input type="number" class="grade" id="gradeSecond" min="0" max="100" placeholder="Segunda nota" autocomplete="off">
+                        <input type="number" class="grade" id="gradeThird" min="0" max="100" placeholder="Terceira nota" autocomplete="off">
+                    </div>
+                </div>
+                <div id="results-container">
+                    <h2 id="gradeFinal">0</h2>
+                    <h2 id="gradeResult" class="gradeResultFail">REPROVADO</h2>
+                </div>            
+            </div>
+
+        </div>
+
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            #container {
+                display: grid;
+                grid-template-columns: 100%;
+                align-items: center;
+                justify-content: center;
+                padding: 10px;
+                height: 100vh;
+                background-color: whitesmoke;
+            }
+            #grades-container {
+                max-width: 40%;
+                margin: 0 auto;
+                padding: 5px;
+                border: 2px dashed #999;
+                background-color: white;
+            }
+            #title {
+                font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                padding: 1%;
+                margin: 5%;
+                color: #666;
+            }
+            #grades {
+                padding: 1%;
+            }
+            .grade {
+                width: 100%;
+                padding: 10px;
+                margin: 1px;
+                border: 1px dashed #666;
+                font-size: 0.8em;
+                border-radius: 5px;
+            }
+            #gradeFinal {
+                text-align: center;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                color: #666;
+                padding-top: 5%;
+            }
+            #gradeResult {
+                text-align: center;
+                margin-bottom: 5%;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            .gradeResultFail {
+                color: crimson;
+            }
+            .gradeResultPass {
+                color: steelblue;
+            }
+            @media (max-width: 600px) {
+                #container {
+                    height: 100vh;
+                }
+                #grades-container {
+                    max-width: 100%;
+                    height: 100%;
+                }
+                #title {
+                    font-size: 3em;
+                    margin-bottom: 30px;
+                }
+                #grades {
+                    margin-bottom: 10px;
+                }
+                .grade {
+                    padding: 30px;
+                    font-size: 1.5em;
+                }
+                #gradeFinal {
+                    font-size: 4em;
+                }
+                #gradeResult {
+                    font-size: 2em;
+                }
+            }
+        </style>
+
+        <script>
+            window.addEventListener('load', () => {
+                getGradeFields();
+                validateFields();
+                monitorFields();
+            })
+
+
+            function updateFinalGrade(averageGrade) {
+                gradeFinal.textContent = ''
+                gradeFinal.textContent = averageGrade
+
+                if (averageGrade >= 70) {
+                    gradeResult.classList.replace("gradeResultFail", "gradeResultPass")
+                    gradeResult.textContent = "APROVADO"
+                } else {
+                    gradeResult.classList.replace("gradeResultPass", "gradeResultFail")
+                    gradeResult.textContent = "REPROVADO"
+                }
+            }
+
+
+            function calcGrades(first, second, third) {
+                if (gradeFirst.value > 100) {
+                    gradeFirst.value = 100
+                    first = 100
+                }
+                if (gradeSecond.value > 100) {
+                    gradeSecond.value = 100
+                    second = 100
+                }
+                if (gradeThird.value > 100) {
+                    gradeThird.value = 100
+                    third = 100
+                }
+                sumGrades = first + second + third
+                averageGrade = sumGrades / 3
+                updateFinalGrade(Math.round(averageGrade))
+            }
+
+
+            function monitorFields() {
+                gradeFirst.addEventListener('input', event => {
+                    first  = parseInt(event.target.value || 0)
+                    second = parseInt(gradeSecond.value || 0)
+                    third  = parseInt(gradeThird.value || 0)
+                    grade  = calcGrades(first, second, third)
+                })
+
+                gradeSecond.addEventListener('input', event => {
+                    first  = parseInt(gradeFirst.value || 0)
+                    second = parseInt(event.target.value || 0)
+                    third  = parseInt(gradeThird.value || 0)
+                    grade  = calcGrades(first, second, third)
+                })
+
+                gradeThird.addEventListener('input', event => {
+                    first  = parseInt(gradeFirst.value || 0)
+                    second = parseInt(gradeSecond.value || 0)
+                    third  = parseInt(event.target.value || 0)
+                    grade  = calcGrades(first, second, third)
+                })
+            }
+
+
+            function validateFields() {
+                // remove unwanted keys
+                gradeFirst.addEventListener('keydown', pressed => {
+                    if (isNaN(parseInt(pressed.key)) && pressed.key !== 'Backspace' && pressed.key !== 'Delete') {
+                        pressed.preventDefault()
+                    }
+                })
+                gradeSecond.addEventListener('keydown', pressed => {
+                    if (isNaN(parseInt(pressed.key)) && pressed.key !== 'Backspace' && pressed.key !== 'Delete') {
+                        pressed.preventDefault()
+                    }
+                })
+                gradeThird.addEventListener('keydown', pressed => {
+                    if (isNaN(parseInt(pressed.key)) && pressed.key !== 'Backspace' && pressed.key !== 'Delete') {
+                        pressed.preventDefault()
+                    }
+                })
+                // prevents user from pasting into the field
+                gradeFirst.addEventListener('paste', event => {
+                    event.preventDefault()
+                })
+                gradeSecond.addEventListener('paste', event => {
+                    event.preventDefault()
+                })
+                gradeThird.addEventListener('paste', event => {
+                    event.preventDefault()
+                })
+
+            }
+
+
+            function getGradeFields() {
+                let gradeFirst   = document.querySelector('#gradeFirst')
+                let gradeSecond  = document.querySelector('#gradeSecond')
+                let gradeThird   = document.querySelector('#gradeThird')
+                let gradeFinal   = document.querySelector('#gradeFinal')
+                let gradeResult = document.querySelector('#gradeResult')
+            }
+        </script>
+    </body>
+</html>
